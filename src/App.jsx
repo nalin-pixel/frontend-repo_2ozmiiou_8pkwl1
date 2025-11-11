@@ -4,9 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 const useApi = () => {
   const baseUrl = useMemo(() => import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000', [])
   const get = async (path) => {
-    const res = await fetch(`${baseUrl}${path}`)
-    if (!res.ok) throw new Error('Request failed')
-    return res.json()
+    try {
+      const res = await fetch(`${baseUrl}${path}`)
+      if (!res.ok) throw new Error('Request failed')
+      return res.json()
+    } catch (e) {
+      return null
+    }
   }
   const post = async (path, body) => {
     const res = await fetch(`${baseUrl}${path}`, {
@@ -24,6 +28,7 @@ function Header({ current, setCurrent }) {
   const tabs = [
     { key: 'home', label: 'Главная' },
     { key: 'portfolio', label: 'Портфолио' },
+    { key: 'about', label: 'О студии' },
     { key: 'booking', label: 'Запись' },
     { key: 'admin', label: 'Админ' },
   ]
@@ -71,6 +76,25 @@ const fadeUp = {
   show: { y: 0, opacity: 1, transition: { duration: 0.6, ease: 'easeOut' } },
 }
 
+const sampleServices = [
+  { title: 'Минимализм', description: 'Аккуратные тонкие линии, небольшие символы и знаки.', price_from: 3000, duration_min: 45 },
+  { title: 'Графика', description: 'Контрастные композиции, штриховка, геометрия и абстракции.', price_from: 5000, duration_min: 90 },
+  { title: 'Блэкворк', description: 'Плотные чёрные заливки, мощная выразительность.', price_from: 7000, duration_min: 120 },
+  { title: 'Реализм', description: 'Фотореалистичные сюжеты, портреты и детали.', price_from: 9000, duration_min: 150 },
+]
+
+const samplePortfolio = [
+  { title: 'Лунная линия', style: 'минимализм', description: 'Тонкие контуры, легкий акцент на тени.', image_url: 'https://images.unsplash.com/photo-1543132220-4bf3d019463d?auto=format&fit=crop&w=1200&q=60', featured: true },
+  { title: 'Геометрия рук', style: 'графика', description: 'Сочетание острых форм и плавных линий.', image_url: 'https://images.unsplash.com/photo-1553484771-047a44eee27c?auto=format&fit=crop&w=1200&q=60' },
+  { title: 'Blackwork sleeve', style: 'блэкворк', description: 'Глубокие чёрные заливки и фактуры.', image_url: 'https://images.unsplash.com/photo-1551727974-8af20a3322e1?auto=format&fit=crop&w=1200&q=60' },
+  { title: 'Роза', style: 'реализм', description: 'Детализированные лепестки и мягкие переходы.', image_url: 'https://images.unsplash.com/photo-1530023367847-a683933f4171?auto=format&fit=crop&w=1200&q=60' },
+  { title: 'Грань', style: 'графика', description: 'Чёткая геометрия с акцентом на форму.', image_url: 'https://images.unsplash.com/photo-1613151841560-4ec7a9a8f8b4?auto=format&fit=crop&w=1200&q=60' },
+  { title: 'Ласточка', style: 'нео-традишнл', description: 'Классический символ в современной подаче.', image_url: 'https://images.unsplash.com/photo-1503342217505-b0a15cf70489?auto=format&fit=crop&w=1200&q=60' },
+  { title: 'Тонкая линия', style: 'минимализм', description: 'Еле заметная, но выразительная деталь.', image_url: 'https://images.unsplash.com/photo-1507915135761-41a0a222c709?auto=format&fit=crop&w=1200&q=60' },
+  { title: 'Координации', style: 'минимализм', description: 'Личные координаты в аккуратной надписи.', image_url: 'https://images.unsplash.com/photo-1563174366-35d0400d54ba?auto=format&fit=crop&w=1200&q=60' },
+  { title: 'Браслет', style: 'линейная графика', description: 'Универсальный дизайн вокруг запястья.', image_url: 'https://images.unsplash.com/photo-1533136033522-0198f920d8ae?auto=format&fit=crop&w=1200&q=60' },
+]
+
 function Home({ services, portfolio, goBooking, goPortfolio }) {
   return (
     <div className="relative">
@@ -95,10 +119,16 @@ function Home({ services, portfolio, goBooking, goPortfolio }) {
               Авторские татуировки в вашем стиле
             </h1>
             <p className="mt-4 text-gray-600">
-              Запишись на консультацию, подберём эскиз и дату. Работаю в разных стилях: минимализм,
-              графика, блэкворк, реализм.
+              Индивидуальные проекты, чистая линия и комфортный процесс. Мы работаем в минимализме, графике,
+              блэкворке и реализме — поможем сформулировать идею и аккуратно воплотим её в жизнь.
             </p>
-            <div className="mt-6 flex gap-3">
+            <ul className="mt-4 grid sm:grid-cols-2 gap-2 text-sm text-gray-700">
+              <li className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-black" /> Стерильность и одноразовые расходники</li>
+              <li className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-black" /> Эскиз под вас и сопровождение по уходу</li>
+              <li className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-black" /> Запись на удобное время, напоминания</li>
+              <li className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-black" /> Коррекция при необходимости</li>
+            </ul>
+            <div className="mt-6 flex flex-wrap gap-3">
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
@@ -134,9 +164,11 @@ function Home({ services, portfolio, goBooking, goPortfolio }) {
                 transition={{ type: 'spring', stiffness: 120, damping: 18 }}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-500">
-                Добавьте работы в админке
-              </div>
+              <motion.img
+                src={samplePortfolio[0].image_url}
+                alt="Featured"
+                className="w-full h-full object-cover"
+              />
             )}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
           </motion.div>
@@ -158,7 +190,7 @@ function Home({ services, portfolio, goBooking, goPortfolio }) {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
           >
-            {(services?.length ? services : []).map((s, i) => (
+            {(services?.length ? services : sampleServices).map((s, i) => (
               <motion.div
                 key={s.id || i}
                 variants={{ hidden: { y: 16, opacity: 0 }, show: { y: 0, opacity: 1, transition: { delay: i * 0.05, duration: 0.5 } } }}
@@ -178,9 +210,6 @@ function Home({ services, portfolio, goBooking, goPortfolio }) {
                 )}
               </motion.div>
             ))}
-            {!services?.length && (
-              <motion.div variants={fadeUp} className="text-gray-500">Нет услуг. Добавьте в админке.</motion.div>
-            )}
           </motion.div>
         </section>
 
@@ -195,37 +224,51 @@ function Home({ services, portfolio, goBooking, goPortfolio }) {
             Портфолио
           </motion.h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {portfolio?.length ? (
-              portfolio.map((item, i) => (
-                <motion.figure
-                  key={item.id || i}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.5, delay: i * 0.04 }}
-                  whileHover={{ y: -6 }}
-                  className="rounded-xl overflow-hidden border bg-white shadow-sm"
-                >
-                  <motion.img
-                    src={item.image_url}
-                    alt={item.title}
-                    className="w-full h-48 object-cover"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-                  />
-                  <figcaption className="p-3">
-                    <div className="font-medium">{item.title}</div>
-                    {item.style && <div className="text-xs text-gray-500">{item.style}</div>}
-                    {item.description && (
-                      <div className="text-sm text-gray-600 mt-1">{item.description}</div>
-                    )}
-                  </figcaption>
-                </motion.figure>
-              ))
-            ) : (
-              <motion.div variants={fadeUp} className="text-gray-500">Добавьте работы в админке.</motion.div>
-            )}
+            {(portfolio?.length ? portfolio : samplePortfolio).map((item, i) => (
+              <motion.figure
+                key={item.id || i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.5, delay: i * 0.04 }}
+                whileHover={{ y: -6 }}
+                className="group rounded-xl overflow-hidden border bg-white shadow-sm relative"
+              >
+                <motion.img
+                  src={item.image_url}
+                  alt={item.title}
+                  className="w-full h-48 object-cover"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+                />
+                <figcaption className="p-3">
+                  <div className="font-medium flex items-center justify-between">
+                    <span>{item.title}</span>
+                    {item.style && <span className="text-xs text-gray-500">{item.style}</span>}
+                  </div>
+                  {item.description && (
+                    <div className="text-sm text-gray-600 mt-1">{item.description}</div>
+                  )}
+                </figcaption>
+                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-black/20 via-transparent to-transparent"/>
+              </motion.figure>
+            ))}
           </div>
+        </section>
+
+        <section className="mt-16 grid md:grid-cols-3 gap-6" id="why">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} className="bg-white border rounded-2xl p-5 shadow-sm">
+            <h3 className="font-semibold text-lg">Тщательная подготовка</h3>
+            <p className="text-gray-600 mt-2 text-sm">Вместе уточняем идею, делаем эскиз и подбираем оптимальный размер и место. Вы заранее видите, как тату будет смотреться на коже.</p>
+          </motion.div>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} className="bg-white border rounded-2xl p-5 shadow-sm">
+            <h3 className="font-semibold text-lg">Комфорт и безопасность</h3>
+            <p className="text-gray-600 mt-2 text-sm">Стерильность, одноразовые иглы и проверенные материалы. Спокойная атмосфера, удобное кресло и плейлист под ваше настроение.</p>
+          </motion.div>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} className="bg-white border rounded-2xl p-5 shadow-sm">
+            <h3 className="font-semibold text-lg">Сопровождение после</h3>
+            <p className="text-gray-600 mt-2 text-sm">Вы получите подробные рекомендации по уходу, напоминания и при необходимости бесплатную коррекцию.</p>
+          </motion.div>
         </section>
       </div>
     </div>
@@ -322,7 +365,7 @@ function Admin() {
   const loadAppointments = async () => {
     try {
       const data = await get(`/admin/appointments?password=${encodeURIComponent(password)}`)
-      setApps(data)
+      setApps(data || [])
       setMsg({ ok: true, text: 'Заявки загружены' })
     } catch {
       setMsg({ ok: false, text: 'Ошибка авторизации' })
@@ -453,6 +496,36 @@ function Admin() {
   )
 }
 
+function About() {
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-10">
+      <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-2xl font-bold mb-4">О студии</motion.h2>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white border rounded-2xl p-5 shadow-sm">
+          <h3 className="font-semibold">Философия</h3>
+          <p className="text-gray-600 mt-2 text-sm">
+            Для нас тату — это способ рассказать историю. Мы уделяем внимание деталям: от первых
+            референсов и эскиза до мягких градиентов и чёткой посадки на теле.
+          </p>
+          <p className="text-gray-600 mt-2 text-sm">
+            Мы работаем в приватном пространстве, где можно расслабиться, обсудить идею и не спешить.
+          </p>
+        </div>
+        <div className="bg-white border rounded-2xl p-5 shadow-sm">
+          <h3 className="font-semibold">Процесс</h3>
+          <ol className="list-decimal ml-5 mt-2 text-gray-600 text-sm space-y-1">
+            <li>Заявка и короткая консультация по идее</li>
+            <li>Эскиз под ваши предпочтения</li>
+            <li>Согласование даты и длительности</li>
+            <li>Сеанс в комфортной обстановке</li>
+            <li>Рекомендации по уходу и при необходимости коррекция</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const { get } = useApi()
   const [current, setCurrent] = useState('home')
@@ -462,14 +535,13 @@ export default function App() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [s, p] = await Promise.all([
-          get('/services'),
-          get('/portfolio'),
-        ])
-        setServices(s)
-        setPortfolio(p)
+        const s = await get('/services')
+        const p = await get('/portfolio')
+        setServices(Array.isArray(s) && s.length ? s : sampleServices)
+        setPortfolio(Array.isArray(p) && p.length ? p : samplePortfolio)
       } catch {
-        // ignore for first load
+        setServices(sampleServices)
+        setPortfolio(samplePortfolio)
       }
     }
     load()
@@ -509,6 +581,12 @@ export default function App() {
           <div className="max-w-6xl mx-auto px-4 py-10">
             <Home services={services} portfolio={portfolio} goBooking={() => setCurrent('booking')} goPortfolio={() => {}} />
           </div>
+        </PageWrapper>
+      )}
+
+      {current === 'about' && (
+        <PageWrapper keyName="about">
+          <About />
         </PageWrapper>
       )}
 
